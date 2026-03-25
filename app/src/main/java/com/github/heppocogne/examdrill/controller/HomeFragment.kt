@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.heppocogne.examdrill.R
 import com.github.heppocogne.examdrill.databinding.DialogAddExamBinding
 import com.github.heppocogne.examdrill.databinding.FragmentHomeBinding
@@ -20,6 +19,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var examModel: ExamModel
+    private lateinit var examAdapter: ExamAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +34,12 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         examModel = ExamModel(requireContext().applicationContext)
 
+        examAdapter = ExamAdapter { exam ->
+            // TODO: navigate to exam detail
+        }
+        binding.examList.layoutManager = LinearLayoutManager(requireContext())
+        binding.examList.adapter = examAdapter
+
         binding.fabAddExam.setOnClickListener { showAddExamDialog() }
         observeExams()
     }
@@ -41,20 +47,7 @@ class HomeFragment : Fragment() {
     private fun observeExams() {
         viewLifecycleOwner.lifecycleScope.launch {
             examModel.getAllExams().collect { exams ->
-                binding.examList.removeAllViews()
-                for (exam in exams) {
-                    val button = Button(requireContext()).apply {
-                        text = exam.name
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                        ).apply { bottomMargin = 8 }
-                        setOnClickListener {
-                            // TODO: navigate to exam detail
-                        }
-                    }
-                    binding.examList.addView(button)
-                }
+                examAdapter.submitList(exams)
             }
         }
     }
