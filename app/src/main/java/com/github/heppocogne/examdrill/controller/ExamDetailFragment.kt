@@ -1,6 +1,8 @@
 package com.github.heppocogne.examdrill.controller
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -11,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.heppocogne.examdrill.R
 import com.github.heppocogne.examdrill.databinding.FragmentExamDetailBinding
+import com.github.heppocogne.examdrill.entity.ProblemEntity
 import com.github.heppocogne.examdrill.model.ProblemModel
 import kotlinx.coroutines.launch
 
@@ -20,6 +23,8 @@ class ExamDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var problemModel: ProblemModel
     private lateinit var problemAdapter: ProblemAdapter
+
+    private var allProblems: List<ProblemEntity> = emptyList()
 
     private val examId: Int by lazy {
         requireArguments().getInt(ARG_EXAM_ID)
@@ -63,15 +68,49 @@ class ExamDetailFragment : Fragment() {
                 .commit()
         }
 
+        binding.editSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                applyFilter(s?.toString().orEmpty())
+            }
+        })
+
         observeProblems()
+    }
+
+    private fun applyFilter(query: String) {
+        val words = query.split(Regex("[\\s　]+")).filter { it.isNotEmpty() }
+        val filtered = if (words.isEmpty()) {
+            allProblems
+        } else {
+            allProblems.filter { problem ->
+                words.all { word ->
+                    problem.text.contains(word, ignoreCase = true) ||
+                            problem.choiceA.contains(word, ignoreCase = true) ||
+                            problem.choiceB.contains(word, ignoreCase = true) ||
+                            problem.choiceC.contains(word, ignoreCase = true) ||
+                            problem.choiceD.contains(word, ignoreCase = true)
+                }
+            }
+        }
+        problemAdapter.submitList(filtered)
+        val isEmpty = filtered.isEmpty()
+        binding.textEmpty.visibility = if (isEmpty) VISIBLE else GONE
+        binding.problemList.visibility = if (isEmpty) GONE else VISIBLE
+        if (isEmpty) {
+            val isSearching = words.isNotEmpty()
+            binding.textEmpty.setText(
+                if (isSearching) R.string.no_search_results else R.string.no_problems
+            )
+        }
     }
 
     private fun observeProblems() {
         viewLifecycleOwner.lifecycleScope.launch {
             problemModel.getProblemsForExam(examId).collect { problems ->
-                problemAdapter.submitList(problems)
-                binding.textEmpty.visibility = if (problems.isEmpty()) VISIBLE else GONE
-                binding.problemList.visibility = if (problems.isEmpty()) GONE else VISIBLE
+                allProblems = problems
+                applyFilter(binding.editSearch.text?.toString().orEmpty())
             }
         }
     }
@@ -82,8 +121,8 @@ class ExamDetailFragment : Fragment() {
     }
 
     companion object {
-        const val ARG_EXAM_ID = "exam_id"
-        const val ARG_EXAM_NAME = "exam_name"
+        const val ARG_EXAM_ID = "ARG_EXAM_ID"
+        const val ARG_EXAM_NAME = "ARG_EXAM_NAME"
 
         fun newInstance(examId: Int, examName: String): ExamDetailFragment {
             return ExamDetailFragment().apply {
