@@ -56,6 +56,13 @@ class QuizFragment : Fragment() {
             @Suppress("DEPRECATION")
             requireArguments().getParcelableArrayList(ARG_PROBLEMS)
         } ?: emptyList()
+        
+        problems = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelableArrayList(ARG_PROBLEMS, ProblemEntity::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            requireArguments().getParcelableArrayList(ARG_PROBLEMS)
+        } ?: emptyList()
 
         binding.btnAction.setOnClickListener { onActionClick() }
 
