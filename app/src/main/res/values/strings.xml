@@ -24,6 +24,7 @@
     <string name="reason_name">理由</string>
     <string name="explanation">解説・メモ</string>
     <string name="status">理解度</string>
+    <string name="field_required">%sは必須です</string>
     <string name="save">保存</string>
     <string-array name="choices">
         <item>ア</item>
