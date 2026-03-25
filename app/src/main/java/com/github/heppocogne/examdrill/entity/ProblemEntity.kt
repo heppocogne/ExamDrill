@@ -61,4 +61,6 @@ data class ProblemEntity(
     val explanation: String,
     val createdDate: Date,
     val updatedDate: Date,
+    @ColumnInfo(name = "last_quiz_date")
+    val lastQuizDate: Date? = null,
 )
