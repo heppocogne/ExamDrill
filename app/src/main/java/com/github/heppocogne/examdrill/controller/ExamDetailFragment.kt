@@ -50,11 +50,10 @@ class ExamDetailFragment : Fragment() {
         binding.problemList.adapter = problemAdapter
 
         binding.btnRandomQuiz.setOnClickListener {
-            // TODO: navigate to quiz screen (random)
-        }
-
-        binding.btnReview.setOnClickListener {
-            // TODO: navigate to quiz screen (review)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, QuizSettingsFragment.newInstance(examId))
+                .addToBackStack(null)
+                .commit()
         }
 
         binding.fabAddProblem.setOnClickListener {

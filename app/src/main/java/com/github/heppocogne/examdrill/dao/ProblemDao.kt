@@ -13,6 +13,17 @@ interface ProblemDao {
     @Query("SELECT * FROM problems WHERE exam_id = :examId")
     fun getByExamId(examId: Int): Flow<List<ProblemEntity>>
 
+    @Query(
+        "SELECT * FROM problems WHERE exam_id = :examId" +
+                " AND (status_id IN (:statusIds) OR status_id IS NULL)" +
+                " AND (reason_id IN (:reasonIds) OR reason_id IS NULL)" +
+                " ORDER BY CASE WHEN last_quiz_date IS NULL THEN 0 ELSE 1 END, last_quiz_date ASC"
+    )
+    suspend fun getForReview(examId: Int, statusIds: List<Int>, reasonIds: List<Int>): List<ProblemEntity>
+
+    @Query("SELECT * FROM problems WHERE exam_id = :examId ORDER BY RANDOM()")
+    suspend fun getForRandom(examId: Int): List<ProblemEntity>
+
     @Insert
     suspend fun insert(entity: ProblemEntity)
 

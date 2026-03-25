@@ -14,4 +14,10 @@ class ProblemModel(context: Context) {
     suspend fun addProblem(problem: ProblemEntity) {
         problemDao.insert(problem)
     }
+
+    suspend fun getForReview(examId: Int, statusIds: List<Int>, reasonIds: List<Int>): List<ProblemEntity> =
+        problemDao.getForReview(examId, statusIds, reasonIds)
+
+    suspend fun getForRandom(examId: Int): List<ProblemEntity> =
+        problemDao.getForRandom(examId)
 }
