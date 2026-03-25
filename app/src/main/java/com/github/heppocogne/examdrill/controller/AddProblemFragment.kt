@@ -19,6 +19,7 @@ import com.github.heppocogne.examdrill.model.CategoryModel
 import com.github.heppocogne.examdrill.model.ProblemModel
 import com.github.heppocogne.examdrill.model.ReasonModel
 import com.github.heppocogne.examdrill.model.StatusModel
+import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -176,10 +177,23 @@ class AddProblemFragment : Fragment() {
         val correctAnswer = binding.dropdownCorrectAnswer.text.toString().trim()
         val explanation = binding.editExplanation.text.toString().trim()
 
-        if (selectedCategoryId == null || problemText.isEmpty() ||
-            choiceA.isEmpty() || choiceB.isEmpty() || choiceC.isEmpty() || choiceD.isEmpty() ||
-            userChoice.isEmpty() || correctAnswer.isEmpty()
-        ) {
+        val missingField = when {
+            selectedCategoryId == null -> getString(R.string.category)
+            problemText.isEmpty() -> getString(R.string.problem_text)
+            choiceA.isEmpty() -> getString(R.string.choice_a)
+            choiceB.isEmpty() -> getString(R.string.choice_b)
+            choiceC.isEmpty() -> getString(R.string.choice_c)
+            choiceD.isEmpty() -> getString(R.string.choice_d)
+            userChoice.isEmpty() -> getString(R.string.user_choice)
+            correctAnswer.isEmpty() -> getString(R.string.correct_answer)
+            else -> null
+        }
+        if (missingField != null) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.field_required, missingField),
+                Toast.LENGTH_SHORT,
+            ).show()
             return
         }
 
