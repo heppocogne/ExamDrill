@@ -129,7 +129,10 @@ class QuizSettingsFragment : Fragment() {
                 return@launch
             }
 
-            // TODO: navigate to quiz screen with problems
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, QuizFragment.newInstance(problems))
+                .addToBackStack(null)
+                .commit()
         }
     }
 

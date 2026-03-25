@@ -34,6 +34,13 @@
     <string name="reset_defaults">デフォルトに戻す</string>
     <string name="start_quiz">出題開始</string>
     <string name="no_matching_problems">条件に合う問題がありません</string>
+    <string name="answer_button">回答</string>
+    <string name="next_problem">次の問題へ</string>
+    <string name="result_correct">正解！</string>
+    <string name="result_incorrect">不正解…正解は「%s」</string>
+    <string name="quiz_progress">%1$d / %2$d</string>
+    <string name="quiz_finished">全問終了しました</string>
+    <string name="select_choice">選択肢を選んでください</string>
     <string name="save">保存</string>
     <string-array name="choices">
         <item>ア</item>
