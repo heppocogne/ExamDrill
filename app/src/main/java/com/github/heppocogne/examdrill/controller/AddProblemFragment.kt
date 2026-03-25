@@ -13,9 +13,11 @@ import com.github.heppocogne.examdrill.databinding.FragmentAddProblemBinding
 import com.github.heppocogne.examdrill.entity.CategoryEntity
 import com.github.heppocogne.examdrill.entity.ProblemEntity
 import com.github.heppocogne.examdrill.entity.ReasonEntity
+import com.github.heppocogne.examdrill.entity.StatusEntity
 import com.github.heppocogne.examdrill.model.CategoryModel
 import com.github.heppocogne.examdrill.model.ProblemModel
 import com.github.heppocogne.examdrill.model.ReasonModel
+import com.github.heppocogne.examdrill.model.StatusModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -27,12 +29,15 @@ class AddProblemFragment : Fragment() {
 
     private lateinit var categoryModel: CategoryModel
     private lateinit var reasonModel: ReasonModel
+    private lateinit var statusModel: StatusModel
     private lateinit var problemModel: ProblemModel
 
     private var categories: List<CategoryEntity> = emptyList()
     private var reasons: List<ReasonEntity> = emptyList()
+    private var statuses: List<StatusEntity> = emptyList()
     private var selectedCategoryId: Int? = null
     private var selectedReasonId: Int? = null
+    private var selectedStatusId: Int? = null
 
     private val examId: Int by lazy { requireArguments().getInt(ARG_EXAM_ID) }
 
@@ -50,6 +55,7 @@ class AddProblemFragment : Fragment() {
         val appContext = requireContext().applicationContext
         categoryModel = CategoryModel(appContext)
         reasonModel = ReasonModel(appContext)
+        statusModel = StatusModel(appContext)
         problemModel = ProblemModel(appContext)
 
         requireActivity().title = getString(R.string.add_problem)
@@ -57,6 +63,7 @@ class AddProblemFragment : Fragment() {
         setupChoiceDropdowns()
         observeCategories()
         observeReasons()
+        observeStatuses()
 
         binding.btnAddCategory.setOnClickListener { showAddCategoryDialog() }
         binding.btnSave.setOnClickListener { saveProblem() }
@@ -99,6 +106,23 @@ class AddProblemFragment : Fragment() {
                 binding.dropdownReason.setAdapter(adapter)
                 binding.dropdownReason.setOnItemClickListener { _, _, position, _ ->
                     selectedReasonId = list[position].id
+                }
+            }
+        }
+    }
+
+    private fun observeStatuses() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            statusModel.getAllStatuses().collect { list ->
+                statuses = list
+                val adapter = ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    list.map { it.text },
+                )
+                binding.dropdownStatus.setAdapter(adapter)
+                binding.dropdownStatus.setOnItemClickListener { _, _, position, _ ->
+                    selectedStatusId = list[position].id
                 }
             }
         }
@@ -151,6 +175,7 @@ class AddProblemFragment : Fragment() {
             userChoice = userChoice,
             answer = correctAnswer,
             reasonId = selectedReasonId!!,
+            statusId = selectedStatusId,
             explanation = explanation,
             createdDate = now,
             updatedDate = now,
