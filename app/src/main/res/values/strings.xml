@@ -21,6 +21,7 @@
     <string name="correct_answer">正解</string>
     <string name="reason">間違えた理由</string>
     <string name="explanation">解説・メモ</string>
+    <string name="status">理解度</string>
     <string name="save">保存</string>
     <string-array name="choices">
         <item>ア</item>

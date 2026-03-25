@@ -5,6 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.github.heppocogne.examdrill.dao.CategoryDao
 import com.github.heppocogne.examdrill.dao.ExamDao
 import com.github.heppocogne.examdrill.dao.ProblemDao
@@ -44,7 +48,18 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "exam_drill_db"
-                ).build().also { INSTANCE = it }
+                ).addCallback(object : Callback() {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        super.onCreate(db)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            getInstance(context).statusDao().apply {
+                                insert(StatusEntity(text = "未理解"))
+                                insert(StatusEntity(text = "怪しい"))
+                                insert(StatusEntity(text = "理解済み"))
+                            }
+                        }
+                    }
+                }).build().also { INSTANCE = it }
             }
         }
     }
