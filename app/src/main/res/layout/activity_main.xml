@@ -13,7 +13,6 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
-        android:name="com.github.heppocogne.examdrill.controller.HomeFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

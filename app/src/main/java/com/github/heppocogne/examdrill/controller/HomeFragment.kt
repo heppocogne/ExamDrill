@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.heppocogne.examdrill.R
+import com.github.heppocogne.examdrill.controller.ExamDetailFragment
 import com.github.heppocogne.examdrill.databinding.DialogAddExamBinding
 import com.github.heppocogne.examdrill.databinding.FragmentHomeBinding
 import com.github.heppocogne.examdrill.model.ExamModel
@@ -35,7 +36,10 @@ class HomeFragment : Fragment() {
         examModel = ExamModel(requireContext().applicationContext)
 
         examAdapter = ExamAdapter { exam ->
-            // TODO: navigate to exam detail
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ExamDetailFragment.newInstance(exam.id, exam.name))
+                .addToBackStack(null)
+                .commit()
         }
         binding.examList.layoutManager = LinearLayoutManager(requireContext())
         binding.examList.adapter = examAdapter

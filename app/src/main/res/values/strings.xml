@@ -5,4 +5,8 @@
     <string name="add">追加</string>
     <string name="cancel">キャンセル</string>
     <string name="exam_list">試験一覧</string>
+    <string name="random_quiz">ランダム出題</string>
+    <string name="review">復習</string>
+    <string name="problem_list">問題一覧</string>
+    <string name="add_problem">問題を追加</string>
 </resources>

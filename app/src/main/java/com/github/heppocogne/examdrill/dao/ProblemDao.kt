@@ -3,13 +3,16 @@ package com.github.heppocogne.examdrill.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.Query
 import androidx.room.Update
 import com.github.heppocogne.examdrill.entity.ProblemEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProblemDao {
-    // TODO: SELECTを追加する
-    
+    @Query("SELECT * FROM problems WHERE exam_id = :examId")
+    fun getByExamId(examId: Int): Flow<List<ProblemEntity>>
+
     @Insert
     suspend fun insert(entity: ProblemEntity)
 
