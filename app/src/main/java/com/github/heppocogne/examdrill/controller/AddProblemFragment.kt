@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.github.heppocogne.examdrill.R
 import com.github.heppocogne.examdrill.databinding.DialogAddCategoryBinding
+import com.github.heppocogne.examdrill.databinding.DialogAddReasonBinding
 import com.github.heppocogne.examdrill.databinding.FragmentAddProblemBinding
 import com.github.heppocogne.examdrill.entity.CategoryEntity
 import com.github.heppocogne.examdrill.entity.ProblemEntity
@@ -66,6 +67,7 @@ class AddProblemFragment : Fragment() {
         observeStatuses()
 
         binding.btnAddCategory.setOnClickListener { showAddCategoryDialog() }
+        binding.btnAddReason.setOnClickListener { showAddReasonDialog() }
         binding.btnSave.setOnClickListener { saveProblem() }
     }
 
@@ -146,6 +148,24 @@ class AddProblemFragment : Fragment() {
             .show()
     }
 
+    private fun showAddReasonDialog() {
+        val dialogBinding = DialogAddReasonBinding.inflate(layoutInflater)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.add_reason)
+            .setView(dialogBinding.root)
+            .setPositiveButton(R.string.add) { _, _ ->
+                val name = dialogBinding.editReasonName.text.toString().trim()
+                if (name.isNotEmpty()) {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        reasonModel.addReason(name)
+                    }
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
     private fun saveProblem() {
         val problemText = binding.editProblemText.text.toString().trim()
         val choiceA = binding.editChoiceA.text.toString().trim()
@@ -158,7 +178,7 @@ class AddProblemFragment : Fragment() {
 
         if (selectedCategoryId == null || problemText.isEmpty() ||
             choiceA.isEmpty() || choiceB.isEmpty() || choiceC.isEmpty() || choiceD.isEmpty() ||
-            userChoice.isEmpty() || correctAnswer.isEmpty() || selectedReasonId == null
+            userChoice.isEmpty() || correctAnswer.isEmpty()
         ) {
             return
         }
@@ -174,7 +194,7 @@ class AddProblemFragment : Fragment() {
             choiceD = choiceD,
             userChoice = userChoice,
             answer = correctAnswer,
-            reasonId = selectedReasonId!!,
+            reasonId = selectedReasonId,
             statusId = selectedStatusId,
             explanation = explanation,
             createdDate = now,
