@@ -4,4 +4,5 @@
     <string name="exam_name">試験名</string>
     <string name="add">追加</string>
     <string name="cancel">キャンセル</string>
+    <string name="exam_list">試験一覧</string>
 </resources>
