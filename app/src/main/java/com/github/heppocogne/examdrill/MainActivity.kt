@@ -54,15 +54,15 @@ class MainActivity : AppCompatActivity() {
         val dialogBinding = DialogAddExamBinding.inflate(layoutInflater)
 
         MaterialAlertDialogBuilder(this)
-            .setTitle("試験を追加")
+            .setTitle(R.string.add_exam)
             .setView(dialogBinding.root)
-            .setPositiveButton("追加") { _, _ ->
+            .setPositiveButton(R.string.add) { _, _ ->
                 val name = dialogBinding.editExamName.text.toString().trim()
                 if (name.isNotEmpty()) {
                     lifecycleScope.launch { examModel.addExam(name) }
                 }
             }
-            .setNegativeButton("キャンセル", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 }

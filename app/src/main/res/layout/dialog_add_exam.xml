@@ -7,7 +7,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="試験名">
+        android:hint="@string/exam_name">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_exam_name"
