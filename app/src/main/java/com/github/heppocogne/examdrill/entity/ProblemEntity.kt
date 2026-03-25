@@ -55,7 +55,7 @@ data class ProblemEntity(
     val userChoice: String,
     val answer: String,
     @ColumnInfo(name = "reason_id")
-    val reasonId: Int,
+    val reasonId: Int? = null,
     @ColumnInfo(name = "status_id")
     val statusId: Int? = null,
     val explanation: String,

@@ -20,6 +20,8 @@
     <string name="user_choice">自分の回答</string>
     <string name="correct_answer">正解</string>
     <string name="reason">間違えた理由</string>
+    <string name="add_reason">理由を追加</string>
+    <string name="reason_name">理由</string>
     <string name="explanation">解説・メモ</string>
     <string name="status">理解度</string>
     <string name="save">保存</string>
