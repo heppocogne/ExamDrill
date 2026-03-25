@@ -56,7 +56,7 @@ class QuizFragment : Fragment() {
             @Suppress("DEPRECATION")
             requireArguments().getParcelableArrayList(ARG_PROBLEMS)
         } ?: emptyList()
-        
+
         problems = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireArguments().getParcelableArrayList(ARG_PROBLEMS, ProblemEntity::class.java)
         } else {
@@ -96,10 +96,11 @@ class QuizFragment : Fragment() {
             getString(R.string.quiz_progress, currentIndex + 1, problems.size)
         binding.textProblem.text = problem.text
 
-        binding.radioChoiceA.text = getString(R.string.choice_a) + "：" + problem.choiceA
-        binding.radioChoiceB.text = getString(R.string.choice_b) + "：" + problem.choiceB
-        binding.radioChoiceC.text = getString(R.string.choice_c) + "：" + problem.choiceC
-        binding.radioChoiceD.text = getString(R.string.choice_d) + "：" + problem.choiceD
+        val choices = resources.getStringArray(R.array.choices)
+        binding.radioChoiceA.text = choices[0] + ": " + problem.choiceA
+        binding.radioChoiceB.text = choices[1] + ": " + problem.choiceB
+        binding.radioChoiceC.text = choices[2] + ": " + problem.choiceC
+        binding.radioChoiceD.text = choices[3] + ": " + problem.choiceD
 
         binding.radioGroupChoices.clearCheck()
         setRadioEnabled(true)
