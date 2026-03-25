@@ -20,4 +20,8 @@ class ProblemModel(context: Context) {
 
     suspend fun getForRandom(examId: Int): List<ProblemEntity> =
         problemDao.getForRandom(examId)
+
+    suspend fun updateProblem(problem: ProblemEntity) {
+        problemDao.update(problem)
+    }
 }

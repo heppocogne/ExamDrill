@@ -1,11 +1,14 @@
 package com.github.heppocogne.examdrill.entity
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 import java.util.Date
 
+@Parcelize
 @Entity(
     tableName = "problems",
     foreignKeys = [
@@ -63,4 +66,4 @@ data class ProblemEntity(
     val updatedDate: Date,
     @ColumnInfo(name = "last_quiz_date")
     val lastQuizDate: Date? = null,
-)
+) : Parcelable
