@@ -1,6 +1,6 @@
 package com.github.heppocogne.examdrill.controller
 
-import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -50,9 +50,12 @@ class QuizFragment : Fragment() {
         problemModel = ProblemModel(appContext)
         statusModel = StatusModel(appContext)
 
-        @Suppress("DEPRECATION")
-        problems = requireArguments().getParcelableArrayList<ProblemEntity>(ARG_PROBLEMS)
-            ?: emptyList()
+        problems = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelableArrayList(ARG_PROBLEMS, ProblemEntity::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            requireArguments().getParcelableArrayList(ARG_PROBLEMS)
+        } ?: emptyList()
 
         binding.btnAction.setOnClickListener { onActionClick() }
 
@@ -129,10 +132,10 @@ class QuizFragment : Fragment() {
 
         if (isCorrect) {
             binding.textResult.text = getString(R.string.result_correct)
-            binding.textResult.setTextColor(Color.parseColor("#4CAF50"))
+            binding.textResult.setTextColor(requireContext().getColor(R.color.correct))
         } else {
             binding.textResult.text = getString(R.string.result_incorrect, problem.answer)
-            binding.textResult.setTextColor(Color.parseColor("#F44336"))
+            binding.textResult.setTextColor(requireContext().getColor(R.color.incorrect))
         }
 
         binding.editExplanation.setText(problem.explanation)
@@ -143,7 +146,7 @@ class QuizFragment : Fragment() {
 
         // lastQuizDateを更新
         viewLifecycleOwner.lifecycleScope.launch {
-            problemModel.updateProblem(problem.copy(lastQuizDate = Date()))
+            problemModel.updateProblem(problem.copy(lastQuizDate = Date(), updatedDate = Date()))
         }
     }
 
@@ -165,13 +168,15 @@ class QuizFragment : Fragment() {
     private fun saveChanges() {
         val problem = problems[currentIndex]
         val newExplanation = binding.editExplanation.text.toString().trim()
-        val updated = problem.copy(
-            explanation = newExplanation,
-            statusId = selectedStatusId,
-            updatedDate = Date(),
-        )
-        viewLifecycleOwner.lifecycleScope.launch {
-            problemModel.updateProblem(updated)
+        if (newExplanation != problem.explanation || selectedStatusId != problem.statusId) {
+            val updated = problem.copy(
+                explanation = newExplanation,
+                statusId = selectedStatusId,
+                updatedDate = Date(),
+            )
+            viewLifecycleOwner.lifecycleScope.launch {
+                problemModel.updateProblem(updated)
+            }
         }
     }
 
