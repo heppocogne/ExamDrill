@@ -168,6 +168,7 @@ class QuizSettingsFragment : Fragment() {
         val isReview = binding.radioReview.isChecked
 
         viewLifecycleOwner.lifecycleScope.launch {
+            // TODO: IDだけを取得するようにする
             val problems = if (isReview) {
                 val selectedStatusIds = statusCheckBoxes
                     .filter { it.first.isChecked }

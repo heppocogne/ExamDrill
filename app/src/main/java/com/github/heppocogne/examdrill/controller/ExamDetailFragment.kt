@@ -109,6 +109,7 @@ class ExamDetailFragment : Fragment() {
     private fun observeProblems() {
         viewLifecycleOwner.lifecycleScope.launch {
             problemModel.getProblemsForExam(examId).collect { problems ->
+                // TODO: 全件取得をやめる
                 allProblems = problems
                 applyFilter(binding.editSearch.text?.toString().orEmpty())
             }

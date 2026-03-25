@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 
-@Parcelize
+@Parcelize  // TODO: IDだけ保持するようにすれば要らなくなるはず
 @Entity(
     tableName = "problems",
     foreignKeys = [
@@ -66,4 +66,5 @@ data class ProblemEntity(
     val updatedDate: Date,
     @ColumnInfo(name = "last_quiz_date")
     val lastQuizDate: Date? = null,
+    // TODO: 正答回数・誤答回数を記録する
 ) : Parcelable

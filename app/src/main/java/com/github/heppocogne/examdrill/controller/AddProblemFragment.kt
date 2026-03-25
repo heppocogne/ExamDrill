@@ -134,6 +134,7 @@ class AddProblemFragment : Fragment() {
     private fun showAddCategoryDialog() {
         val dialogBinding = DialogAddCategoryBinding.inflate(layoutInflater)
 
+        // TODO: 重複チェックを入れる
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.add_category)
             .setView(dialogBinding.root)
@@ -152,6 +153,7 @@ class AddProblemFragment : Fragment() {
     private fun showAddReasonDialog() {
         val dialogBinding = DialogAddReasonBinding.inflate(layoutInflater)
 
+        // TODO: 重複チェックを入れる
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.add_reason)
             .setView(dialogBinding.root)
