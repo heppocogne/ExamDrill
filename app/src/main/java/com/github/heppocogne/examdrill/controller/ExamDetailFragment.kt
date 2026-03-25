@@ -3,6 +3,8 @@ package com.github.heppocogne.examdrill.controller
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -69,6 +71,8 @@ class ExamDetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             problemModel.getProblemsForExam(examId).collect { problems ->
                 problemAdapter.submitList(problems)
+                binding.textEmpty.visibility = if (problems.isEmpty()) VISIBLE else GONE
+                binding.problemList.visibility = if (problems.isEmpty()) GONE else VISIBLE
             }
         }
     }

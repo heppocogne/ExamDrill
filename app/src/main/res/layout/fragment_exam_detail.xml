@@ -45,6 +45,16 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/text_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/no_problems"
+        android:textAlignment="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/header" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/problem_list"
         android:layout_width="match_parent"
