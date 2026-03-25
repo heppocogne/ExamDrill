@@ -2,6 +2,7 @@ package com.github.heppocogne.examdrill
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.github.heppocogne.examdrill.controller.HomeFragment
 import com.github.heppocogne.examdrill.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -13,5 +14,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, HomeFragment())
+                .commit()
+        }
     }
 }
