@@ -36,7 +36,7 @@ import java.util.Date
     ]
 )
 data class ProblemEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     @ColumnInfo(name = "exam_id")
     val examId: Int,
@@ -57,7 +57,7 @@ data class ProblemEntity(
     @ColumnInfo(name = "reason_id")
     val reasonId: Int,
     @ColumnInfo(name = "status_id")
-    val statusId: Int,
+    val statusId: Int? = null,
     val explanation: String,
     val createdDate: Date,
     val updatedDate: Date,

@@ -10,4 +10,8 @@ class ProblemModel(context: Context) {
 
     fun getProblemsForExam(examId: Int): Flow<List<ProblemEntity>> =
         problemDao.getByExamId(examId)
+
+    suspend fun addProblem(problem: ProblemEntity) {
+        problemDao.insert(problem)
+    }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.heppocogne.examdrill.R
 import com.github.heppocogne.examdrill.databinding.FragmentExamDetailBinding
 import com.github.heppocogne.examdrill.model.ProblemModel
 import kotlinx.coroutines.launch
@@ -55,7 +56,10 @@ class ExamDetailFragment : Fragment() {
         }
 
         binding.fabAddProblem.setOnClickListener {
-            // TODO: navigate to add problem screen
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, AddProblemFragment.newInstance(examId))
+                .addToBackStack(null)
+                .commit()
         }
 
         observeProblems()
