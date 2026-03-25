@@ -52,6 +52,8 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             examModel.getAllExams().collect { exams ->
                 examAdapter.submitList(exams)
+                binding.textEmpty.visibility = if (exams.isEmpty()) View.VISIBLE else View.GONE
+                binding.examList.visibility = if (exams.isEmpty()) View.GONE else View.VISIBLE
             }
         }
     }
