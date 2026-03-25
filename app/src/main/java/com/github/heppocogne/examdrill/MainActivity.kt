@@ -1,59 +1,68 @@
 package com.github.heppocogne.examdrill
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.widget.Button
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
+import androidx.lifecycle.lifecycleScope
 import com.github.heppocogne.examdrill.databinding.ActivityMainBinding
+import com.github.heppocogne.examdrill.databinding.DialogAddExamBinding
+import com.github.heppocogne.examdrill.model.ExamModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var examModel: ExamModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setSupportActionBar(binding.toolbar)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        examModel = ExamModel(applicationContext)
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+        binding.fabAddExam.setOnClickListener { showAddExamDialog() }
+
+        observeExams()
+    }
+
+    private fun observeExams() {
+        lifecycleScope.launch {
+            examModel.getAllExams().collect { exams ->
+                binding.examList.removeAllViews()
+                for (exam in exams) {
+                    val button = Button(this@MainActivity).apply {
+                        text = exam.name
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                        ).apply { bottomMargin = 8 }
+                        setOnClickListener {
+                            // TODO: navigate to exam detail
+                        }
+                    }
+                    binding.examList.addView(button)
+                }
+            }
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
+    private fun showAddExamDialog() {
+        val dialogBinding = DialogAddExamBinding.inflate(layoutInflater)
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("試験を追加")
+            .setView(dialogBinding.root)
+            .setPositiveButton("追加") { _, _ ->
+                val name = dialogBinding.editExamName.text.toString().trim()
+                if (name.isNotEmpty()) {
+                    lifecycleScope.launch { examModel.addExam(name) }
+                }
+            }
+            .setNegativeButton("キャンセル", null)
+            .show()
     }
 }
