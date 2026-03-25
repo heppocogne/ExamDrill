@@ -1,5 +1,6 @@
 package com.github.heppocogne.examdrill.controller
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,10 @@ class QuizSettingsFragment : Fragment() {
     private val reasonCheckBoxes = mutableListOf<Pair<CheckBox, ReasonEntity>>()
 
     private val examId: Int by lazy { requireArguments().getInt(ARG_EXAM_ID) }
+
+    private val prefs by lazy {
+        requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +74,7 @@ class QuizSettingsFragment : Fragment() {
             reasons = reasonModel.getAllReasons().first()
             buildStatusCheckBoxes()
             buildReasonCheckBoxes()
-            applyDefaults()
+            restoreSettings()
         }
     }
 
@@ -97,17 +102,69 @@ class QuizSettingsFragment : Fragment() {
         binding.radioReview.isChecked = true
         binding.reviewFilters.visibility = View.VISIBLE
 
-        // 理解度: 「理解済み」以外をチェック
         for ((cb, status) in statusCheckBoxes) {
             cb.isChecked = status.text != "理解済み"
         }
-        // 間違えた理由: 全てチェック
         for ((cb, _) in reasonCheckBoxes) {
             cb.isChecked = true
         }
     }
 
+    private fun restoreSettings() {
+        val key = prefKey()
+        if (!prefs.contains("${key}_mode")) {
+            applyDefaults()
+            return
+        }
+
+        val isReview = prefs.getBoolean("${key}_mode", true)
+        if (isReview) {
+            binding.radioReview.isChecked = true
+            binding.reviewFilters.visibility = View.VISIBLE
+        } else {
+            binding.radioRandom.isChecked = true
+            binding.reviewFilters.visibility = View.GONE
+        }
+
+        val savedStatusIds = prefs.getStringSet("${key}_status_ids", null)
+            ?.mapNotNull { it.toIntOrNull() }?.toSet()
+        if (savedStatusIds != null) {
+            for ((cb, status) in statusCheckBoxes) {
+                cb.isChecked = status.id in savedStatusIds
+            }
+        }
+
+        val savedReasonIds = prefs.getStringSet("${key}_reason_ids", null)
+            ?.mapNotNull { it.toIntOrNull() }?.toSet()
+        if (savedReasonIds != null) {
+            for ((cb, reason) in reasonCheckBoxes) {
+                cb.isChecked = reason.id in savedReasonIds
+            }
+        }
+    }
+
+    private fun saveSettings() {
+        val key = prefKey()
+        val isReview = binding.radioReview.isChecked
+        val statusIds = statusCheckBoxes
+            .filter { it.first.isChecked }
+            .map { it.second.id.toString() }
+            .toSet()
+        val reasonIds = reasonCheckBoxes
+            .filter { it.first.isChecked }
+            .map { it.second.id.toString() }
+            .toSet()
+
+        prefs.edit()
+            .putBoolean("${key}_mode", isReview)
+            .putStringSet("${key}_status_ids", statusIds)
+            .putStringSet("${key}_reason_ids", reasonIds)
+            .apply()
+    }
+
     private fun startQuiz() {
+        saveSettings()
+
         val isReview = binding.radioReview.isChecked
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -136,13 +193,17 @@ class QuizSettingsFragment : Fragment() {
         }
     }
 
+    private fun prefKey(): String = "quiz_settings_$examId"
+
     override fun onDestroyView() {
+        saveSettings()
         super.onDestroyView()
         _binding = null
     }
 
     companion object {
         const val ARG_EXAM_ID = "ARG_EXAM_ID"
+        private const val PREFS_NAME = "quiz_settings_prefs"
 
         fun newInstance(examId: Int): QuizSettingsFragment {
             return QuizSettingsFragment().apply {
