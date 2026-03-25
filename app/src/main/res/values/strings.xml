@@ -9,4 +9,23 @@
     <string name="review">復習</string>
     <string name="problem_list">問題一覧</string>
     <string name="add_problem">問題を追加</string>
+    <string name="category">カテゴリ</string>
+    <string name="add_category">カテゴリを追加</string>
+    <string name="category_name">カテゴリ名</string>
+    <string name="problem_text">問題文</string>
+    <string name="choice_a">選択肢 ア</string>
+    <string name="choice_b">選択肢 イ</string>
+    <string name="choice_c">選択肢 ウ</string>
+    <string name="choice_d">選択肢 エ</string>
+    <string name="user_choice">自分の回答</string>
+    <string name="correct_answer">正解</string>
+    <string name="reason">間違えた理由</string>
+    <string name="explanation">解説・メモ</string>
+    <string name="save">保存</string>
+    <string-array name="choices">
+        <item>ア</item>
+        <item>イ</item>
+        <item>ウ</item>
+        <item>エ</item>
+    </string-array>
 </resources>

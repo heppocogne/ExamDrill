@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity("status")
 data class StatusEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val text: String,
 )
