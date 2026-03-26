@@ -134,15 +134,22 @@ class AddProblemFragment : Fragment() {
     private fun showAddCategoryDialog() {
         val dialogBinding = DialogAddCategoryBinding.inflate(layoutInflater)
 
-        // TODO: 重複チェックを入れる
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.add_category)
             .setView(dialogBinding.root)
             .setPositiveButton(R.string.add) { _, _ ->
                 val name = dialogBinding.editCategoryName.text.toString().trim()
                 if (name.isNotEmpty()) {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        categoryModel.addCategory(name, examId)
+                    if (categories.any { it.text.equals(name, ignoreCase = true) }) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.duplicate_entry, name),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    } else {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            categoryModel.addCategory(name, examId)
+                        }
                     }
                 }
             }
@@ -153,15 +160,22 @@ class AddProblemFragment : Fragment() {
     private fun showAddReasonDialog() {
         val dialogBinding = DialogAddReasonBinding.inflate(layoutInflater)
 
-        // TODO: 重複チェックを入れる
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.add_reason)
             .setView(dialogBinding.root)
             .setPositiveButton(R.string.add) { _, _ ->
                 val name = dialogBinding.editReasonName.text.toString().trim()
                 if (name.isNotEmpty()) {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        reasonModel.addReason(name)
+                    if (reasons.any { it.text.equals(name, ignoreCase = true) }) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.duplicate_entry, name),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    } else {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            reasonModel.addReason(name)
+                        }
                     }
                 }
             }
