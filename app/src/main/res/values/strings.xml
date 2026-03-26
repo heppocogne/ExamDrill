@@ -42,6 +42,7 @@
     <string name="quiz_finished">全問終了しました</string>
     <string name="select_choice">選択肢を選んでください</string>
     <string name="save">保存</string>
+    <string name="duplicate_entry">「%s」は既に存在します</string>
     <string name="search_hint">検索</string>
     <string name="no_search_results">問題が見つかりません</string>
     <string-array name="choices">
