@@ -14,4 +14,15 @@ class CategoryModel(context: Context) {
     suspend fun addCategory(text: String, examId: Int) {
         categoryDao.insert(CategoryEntity(text = text, examId = examId))
     }
+
+    suspend fun updateCategory(category: CategoryEntity) {
+        categoryDao.update(category)
+    }
+
+    suspend fun deleteCategory(category: CategoryEntity) {
+        categoryDao.delete(category)
+    }
+
+    suspend fun countProblemsByCategory(categoryId: Int): Int =
+        categoryDao.countProblemsByCategory(categoryId)
 }

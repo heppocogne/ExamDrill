@@ -45,6 +45,12 @@
     <string name="duplicate_entry">「%s」は既に存在します</string>
     <string name="search_hint">検索</string>
     <string name="no_search_results">問題が見つかりません</string>
+    <string name="edit_categories">カテゴリ編集</string>
+    <string name="edit_category">カテゴリ名を編集</string>
+    <string name="delete_category">カテゴリを削除</string>
+    <string name="delete_category_warning">%d問の問題が削除されます。本当に削除しますか？</string>
+    <string name="delete">削除</string>
+    <string name="no_categories">カテゴリが登録されていません</string>
     <string-array name="choices">
         <item>ア</item>
         <item>イ</item>
