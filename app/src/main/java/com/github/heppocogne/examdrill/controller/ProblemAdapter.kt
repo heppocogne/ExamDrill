@@ -12,6 +12,8 @@ class ProblemAdapter(
     private val onClick: (ProblemEntity) -> Unit,
 ) : ListAdapter<ProblemEntity, ProblemAdapter.ProblemViewHolder>(ProblemDiffCallback) {
 
+    var categoryMap: Map<Int, String> = emptyMap()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProblemViewHolder {
         val binding = ItemProblemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ProblemViewHolder(binding)
@@ -19,6 +21,7 @@ class ProblemAdapter(
 
     override fun onBindViewHolder(holder: ProblemViewHolder, position: Int) {
         val problem = getItem(position)
+        holder.binding.textCategory.text = categoryMap[problem.categoryId] ?: ""
         holder.binding.textProblem.text = problem.text
         holder.itemView.setOnClickListener { onClick(problem) }
     }

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.heppocogne.examdrill.R
 import com.github.heppocogne.examdrill.databinding.FragmentExamDetailBinding
 import com.github.heppocogne.examdrill.entity.ProblemEntity
+import com.github.heppocogne.examdrill.model.CategoryModel
 import com.github.heppocogne.examdrill.model.ProblemModel
 import kotlinx.coroutines.launch
 
@@ -22,6 +23,7 @@ class ExamDetailFragment : Fragment() {
     private var _binding: FragmentExamDetailBinding? = null
     private val binding get() = _binding!!
     private lateinit var problemModel: ProblemModel
+    private lateinit var categoryModel: CategoryModel
     private lateinit var problemAdapter: ProblemAdapter
 
     private var allProblems: List<ProblemEntity> = emptyList()
@@ -45,6 +47,7 @@ class ExamDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         problemModel = ProblemModel(requireContext().applicationContext)
+        categoryModel = CategoryModel(requireContext().applicationContext)
 
         requireActivity().title = examName
 
@@ -76,6 +79,7 @@ class ExamDetailFragment : Fragment() {
             }
         })
 
+        observeCategories()
         observeProblems()
     }
 
@@ -103,6 +107,15 @@ class ExamDetailFragment : Fragment() {
             binding.textEmpty.setText(
                 if (isSearching) R.string.no_search_results else R.string.no_problems
             )
+        }
+    }
+
+    private fun observeCategories() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            categoryModel.getCategoriesForExam(examId).collect { categories ->
+                problemAdapter.categoryMap = categories.associate { it.id to it.text }
+                problemAdapter.notifyDataSetChanged()
+            }
         }
     }
 
