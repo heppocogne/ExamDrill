@@ -83,15 +83,16 @@ class AddProblemFragment : Fragment() {
     private fun observeCategories() {
         viewLifecycleOwner.lifecycleScope.launch {
             categoryModel.getCategoriesForExam(examId).collect { list ->
-                categories = list
+                val sorted = list.sortedBy { it.text }
+                categories = sorted
                 val adapter = ArrayAdapter(
                     requireContext(),
                     android.R.layout.simple_dropdown_item_1line,
-                    list.map { it.text },
+                    sorted.map { it.text },
                 )
                 binding.dropdownCategory.setAdapter(adapter)
                 binding.dropdownCategory.setOnItemClickListener { _, _, position, _ ->
-                    selectedCategoryId = list[position].id
+                    selectedCategoryId = sorted[position].id
                 }
             }
         }
