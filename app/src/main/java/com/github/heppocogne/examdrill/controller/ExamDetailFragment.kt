@@ -52,7 +52,10 @@ class ExamDetailFragment : Fragment() {
         requireActivity().title = examName
 
         problemAdapter = ProblemAdapter { problem ->
-            // TODO: navigate to problem detail
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, QuizFragment.newInstance(listOf(problem)))
+                .addToBackStack(null)
+                .commit()
         }
         binding.problemList.layoutManager = LinearLayoutManager(requireContext())
         binding.problemList.adapter = problemAdapter
