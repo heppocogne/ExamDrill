@@ -8,6 +8,8 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +27,7 @@ class ExamDetailFragment : Fragment() {
     private lateinit var problemModel: ProblemModel
     private lateinit var categoryModel: CategoryModel
     private lateinit var problemAdapter: ProblemAdapter
+    private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private var allProblems: List<ProblemEntity> = emptyList()
 
@@ -51,6 +54,8 @@ class ExamDetailFragment : Fragment() {
 
         requireActivity().title = examName
 
+        setupDrawer()
+
         problemAdapter = ProblemAdapter { problem ->
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, QuizFragment.newInstance(listOf(problem)))
@@ -59,13 +64,6 @@ class ExamDetailFragment : Fragment() {
         }
         binding.problemList.layoutManager = LinearLayoutManager(requireContext())
         binding.problemList.adapter = problemAdapter
-
-        binding.btnRandomQuiz.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, QuizSettingsFragment.newInstance(examId))
-                .addToBackStack(null)
-                .commit()
-        }
 
         binding.fabAddProblem.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -84,6 +82,42 @@ class ExamDetailFragment : Fragment() {
 
         observeCategories()
         observeProblems()
+    }
+
+    private fun setupDrawer() {
+        val activity = requireActivity() as AppCompatActivity
+        val toolbar = activity.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+
+        drawerToggle = ActionBarDrawerToggle(
+            activity,
+            binding.drawerLayout,
+            toolbar,
+            R.string.app_name,
+            R.string.app_name,
+        )
+        binding.drawerLayout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
+
+        binding.navView.setNavigationItemSelectedListener { menuItem ->
+            binding.drawerLayout.closeDrawers()
+            when (menuItem.itemId) {
+                R.id.menu_quiz -> {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, QuizSettingsFragment.newInstance(examId))
+                        .addToBackStack(null)
+                        .commit()
+                    true
+                }
+                R.id.menu_add_problem -> {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, AddProblemFragment.newInstance(examId))
+                        .addToBackStack(null)
+                        .commit()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun applyFilter(query: String) {
@@ -133,6 +167,10 @@ class ExamDetailFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        binding.drawerLayout.removeDrawerListener(drawerToggle)
+        val activity = requireActivity() as AppCompatActivity
+        val toolbar = activity.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+        toolbar.navigationIcon = null
         super.onDestroyView()
         _binding = null
     }
