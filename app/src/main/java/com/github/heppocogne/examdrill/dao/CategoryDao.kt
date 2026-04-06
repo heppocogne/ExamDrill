@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.github.heppocogne.examdrill.entity.CategoryEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -15,6 +16,12 @@ interface CategoryDao {
     @Insert
     suspend fun insert(entity: CategoryEntity)
 
+    @Update
+    suspend fun update(entity: CategoryEntity)
+
     @Delete
     suspend fun delete(entity: CategoryEntity)
+
+    @Query("SELECT COUNT(*) FROM problems WHERE category_id = :categoryId")
+    suspend fun countProblemsByCategory(categoryId: Int): Int
 }

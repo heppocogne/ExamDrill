@@ -86,7 +86,8 @@ class ExamDetailFragment : Fragment() {
 
     private fun setupDrawer() {
         val activity = requireActivity() as AppCompatActivity
-        val toolbar = activity.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+        val toolbar =
+            activity.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
 
         drawerToggle = ActionBarDrawerToggle(
             activity,
@@ -108,6 +109,18 @@ class ExamDetailFragment : Fragment() {
                         .commit()
                     true
                 }
+
+                R.id.menu_edit_categories -> {
+                    parentFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.fragment_container,
+                            EditCategoriesFragment.newInstance(examId)
+                        )
+                        .addToBackStack(null)
+                        .commit()
+                    true
+                }
+
                 R.id.menu_add_problem -> {
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, AddProblemFragment.newInstance(examId))
@@ -115,6 +128,7 @@ class ExamDetailFragment : Fragment() {
                         .commit()
                     true
                 }
+
                 else -> false
             }
         }
@@ -169,7 +183,8 @@ class ExamDetailFragment : Fragment() {
     override fun onDestroyView() {
         binding.drawerLayout.removeDrawerListener(drawerToggle)
         val activity = requireActivity() as AppCompatActivity
-        val toolbar = activity.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+        val toolbar =
+            activity.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         toolbar.navigationIcon = null
         super.onDestroyView()
         _binding = null

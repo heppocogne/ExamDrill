@@ -11,4 +11,9 @@
         android:icon="@android:drawable/ic_input_add"
         android:title="@string/add_problem" />
 
+    <item
+        android:id="@+id/menu_edit_categories"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/edit_categories" />
+
 </menu>
