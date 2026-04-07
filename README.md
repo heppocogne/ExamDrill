@@ -1,0 +1,1 @@
+資格試験勉強用にClaude Codeで作ったAndroidアプリ
