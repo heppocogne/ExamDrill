@@ -197,13 +197,26 @@ class QuizFragment : Fragment() {
         listOf(binding.radioChoiceA, binding.radioChoiceB, binding.radioChoiceC, binding.radioChoiceD)
     }
 
+    private val choiceRows by lazy {
+        listOf(
+            Triple(binding.textLabelA, binding.radioChoiceA, binding.textChoiceA),
+            Triple(binding.textLabelB, binding.radioChoiceB, binding.textChoiceB),
+            Triple(binding.textLabelC, binding.radioChoiceC, binding.textChoiceC),
+            Triple(binding.textLabelD, binding.radioChoiceD, binding.textChoiceD),
+        )
+    }
+
     private fun setupRadioExclusion() {
-        for (rb in radioButtons) {
-            rb.setOnClickListener {
+        for ((label, rb, choiceText) in choiceRows) {
+            val onClick = View.OnClickListener {
+                rb.isChecked = true
                 for (other in radioButtons) {
                     if (other != rb) other.isChecked = false
                 }
             }
+            rb.setOnClickListener(onClick)
+            label.setOnClickListener(onClick)
+            choiceText.setOnClickListener(onClick)
         }
     }
 
