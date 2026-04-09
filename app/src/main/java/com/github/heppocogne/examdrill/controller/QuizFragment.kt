@@ -65,6 +65,7 @@ class QuizFragment : Fragment() {
         } ?: emptyList()
 
         binding.btnAction.setOnClickListener { onActionClick() }
+        setupRadioExclusion()
 
         viewLifecycleOwner.lifecycleScope.launch {
             statuses = statusModel.getAllStatuses().first()
@@ -97,12 +98,16 @@ class QuizFragment : Fragment() {
         binding.textProblem.text = problem.text
 
         val choices = resources.getStringArray(R.array.choices)
-        binding.radioChoiceA.text = choices[0] + ": " + problem.choiceA
-        binding.radioChoiceB.text = choices[1] + ": " + problem.choiceB
-        binding.radioChoiceC.text = choices[2] + ": " + problem.choiceC
-        binding.radioChoiceD.text = choices[3] + ": " + problem.choiceD
+        binding.textLabelA.text = choices[0]
+        binding.textLabelB.text = choices[1]
+        binding.textLabelC.text = choices[2]
+        binding.textLabelD.text = choices[3]
+        binding.textChoiceA.text = problem.choiceA
+        binding.textChoiceB.text = problem.choiceB
+        binding.textChoiceC.text = problem.choiceC
+        binding.textChoiceD.text = problem.choiceD
 
-        binding.radioGroupChoices.clearCheck()
+        clearRadioChecks()
         setRadioEnabled(true)
         binding.resultArea.visibility = View.GONE
         binding.btnAction.setText(R.string.answer_button)
@@ -121,7 +126,7 @@ class QuizFragment : Fragment() {
     }
 
     private fun onAnswer() {
-        val selectedChoiceId = binding.radioGroupChoices.checkedRadioButtonId
+        val selectedChoiceId = getCheckedRadioButtonId()
         if (selectedChoiceId == -1) {
             Toast.makeText(requireContext(), R.string.select_choice, Toast.LENGTH_SHORT).show()
             return
@@ -186,6 +191,30 @@ class QuizFragment : Fragment() {
                 problemModel.updateProblem(updated)
             }
         }
+    }
+
+    private val radioButtons by lazy {
+        listOf(binding.radioChoiceA, binding.radioChoiceB, binding.radioChoiceC, binding.radioChoiceD)
+    }
+
+    private fun setupRadioExclusion() {
+        for (rb in radioButtons) {
+            rb.setOnClickListener {
+                for (other in radioButtons) {
+                    if (other != rb) other.isChecked = false
+                }
+            }
+        }
+    }
+
+    private fun clearRadioChecks() {
+        for (rb in radioButtons) {
+            rb.isChecked = false
+        }
+    }
+
+    private fun getCheckedRadioButtonId(): Int {
+        return radioButtons.firstOrNull { it.isChecked }?.id ?: -1
     }
 
     private fun setRadioEnabled(enabled: Boolean) {
