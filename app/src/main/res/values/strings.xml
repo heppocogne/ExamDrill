@@ -51,6 +51,8 @@
     <string name="delete_category_warning">%d問の問題が削除されます。本当に削除しますか？</string>
     <string name="delete">削除</string>
     <string name="no_categories">カテゴリが登録されていません</string>
+    <string name="edit_problem">問題を編集</string>
+    <string name="edit">編集</string>
     <string-array name="choices">
         <item>ア</item>
         <item>イ</item>
