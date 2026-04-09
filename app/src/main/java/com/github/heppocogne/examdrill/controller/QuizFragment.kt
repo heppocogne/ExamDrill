@@ -65,7 +65,12 @@ class QuizFragment : Fragment() {
         } ?: emptyList()
 
         binding.btnAction.setOnClickListener { onActionClick() }
+        binding.btnEdit.setOnClickListener { onEditClick() }
         setupRadioExclusion()
+
+        parentFragmentManager.setFragmentResultListener(RESULT_PROBLEM_EDITED, viewLifecycleOwner) { _, _ ->
+            reloadCurrentProblem()
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             statuses = statusModel.getAllStatuses().first()
@@ -115,6 +120,27 @@ class QuizFragment : Fragment() {
         // 理解度ドロップダウンに現在値をセット
         val currentStatus = statuses.find { it.id == problem.statusId }
         binding.dropdownStatus.setText(currentStatus?.text ?: "", false)
+    }
+
+    private fun onEditClick() {
+        if (currentIndex >= problems.size) return
+        val problem = problems[currentIndex]
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, AddProblemFragment.newInstanceForEdit(problem))
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun reloadCurrentProblem() {
+        if (currentIndex >= problems.size) return
+        val problemId = problems[currentIndex].id
+        viewLifecycleOwner.lifecycleScope.launch {
+            val updated = problemModel.getProblemById(problemId)
+            if (updated != null) {
+                problems = problems.toMutableList().also { it[currentIndex] = updated }
+                showProblem()
+            }
+        }
     }
 
     private fun onActionClick() {
@@ -244,6 +270,7 @@ class QuizFragment : Fragment() {
 
     companion object {
         const val ARG_PROBLEMS = "ARG_PROBLEMS"
+        const val RESULT_PROBLEM_EDITED = "RESULT_PROBLEM_EDITED"
 
         fun newInstance(problems: List<ProblemEntity>): QuizFragment {
             return QuizFragment().apply {

@@ -1,5 +1,6 @@
 package com.github.heppocogne.examdrill.controller
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -42,6 +43,7 @@ class AddProblemFragment : Fragment() {
     private var selectedStatusId: Int? = null
 
     private val examId: Int by lazy { requireArguments().getInt(ARG_EXAM_ID) }
+    private var editingProblem: ProblemEntity? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,16 +62,43 @@ class AddProblemFragment : Fragment() {
         statusModel = StatusModel(appContext)
         problemModel = ProblemModel(appContext)
 
-        requireActivity().title = getString(R.string.add_problem)
+        editingProblem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelable(ARG_PROBLEM, ProblemEntity::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            requireArguments().getParcelable(ARG_PROBLEM)
+        }
+
+        requireActivity().title = if (editingProblem != null) {
+            getString(R.string.edit_problem)
+        } else {
+            getString(R.string.add_problem)
+        }
 
         setupChoiceDropdowns()
         observeCategories()
         observeReasons()
         observeStatuses()
 
+        editingProblem?.let { populateFields(it) }
+
         binding.btnAddCategory.setOnClickListener { showAddCategoryDialog() }
         binding.btnAddReason.setOnClickListener { showAddReasonDialog() }
         binding.btnSave.setOnClickListener { saveProblem() }
+    }
+
+    private fun populateFields(problem: ProblemEntity) {
+        binding.editProblemText.setText(problem.text)
+        binding.editChoiceA.setText(problem.choiceA)
+        binding.editChoiceB.setText(problem.choiceB)
+        binding.editChoiceC.setText(problem.choiceC)
+        binding.editChoiceD.setText(problem.choiceD)
+        binding.dropdownUserChoice.setText(problem.userChoice, false)
+        binding.dropdownCorrectAnswer.setText(problem.answer, false)
+        binding.editExplanation.setText(problem.explanation)
+        selectedCategoryId = problem.categoryId
+        selectedReasonId = problem.reasonId
+        selectedStatusId = problem.statusId
     }
 
     private fun setupChoiceDropdowns() {
@@ -94,6 +123,10 @@ class AddProblemFragment : Fragment() {
                 binding.dropdownCategory.setOnItemClickListener { _, _, position, _ ->
                     selectedCategoryId = sorted[position].id
                 }
+                editingProblem?.let { p ->
+                    val match = sorted.find { it.id == p.categoryId }
+                    match?.let { binding.dropdownCategory.setText(it.text, false) }
+                }
             }
         }
     }
@@ -111,6 +144,10 @@ class AddProblemFragment : Fragment() {
                 binding.dropdownReason.setOnItemClickListener { _, _, position, _ ->
                     selectedReasonId = list[position].id
                 }
+                editingProblem?.let { p ->
+                    val match = list.find { it.id == p.reasonId }
+                    match?.let { binding.dropdownReason.setText(it.text, false) }
+                }
             }
         }
     }
@@ -127,6 +164,10 @@ class AddProblemFragment : Fragment() {
                 binding.dropdownStatus.setAdapter(adapter)
                 binding.dropdownStatus.setOnItemClickListener { _, _, position, _ ->
                     selectedStatusId = list[position].id
+                }
+                editingProblem?.let { p ->
+                    val match = list.find { it.id == p.statusId }
+                    match?.let { binding.dropdownStatus.setText(it.text, false) }
                 }
             }
         }
@@ -215,26 +256,51 @@ class AddProblemFragment : Fragment() {
         }
 
         val now = Date()
-        val problem = ProblemEntity(
-            examId = examId,
-            categoryId = selectedCategoryId!!,
-            text = problemText,
-            choiceA = choiceA,
-            choiceB = choiceB,
-            choiceC = choiceC,
-            choiceD = choiceD,
-            userChoice = userChoice,
-            answer = correctAnswer,
-            reasonId = selectedReasonId,
-            statusId = selectedStatusId,
-            explanation = explanation,
-            createdDate = now,
-            updatedDate = now,
-        )
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            problemModel.addProblem(problem)
-            parentFragmentManager.popBackStack()
+        val existing = editingProblem
+        if (existing != null) {
+            val updated = existing.copy(
+                categoryId = selectedCategoryId!!,
+                text = problemText,
+                choiceA = choiceA,
+                choiceB = choiceB,
+                choiceC = choiceC,
+                choiceD = choiceD,
+                userChoice = userChoice,
+                answer = correctAnswer,
+                reasonId = selectedReasonId,
+                statusId = selectedStatusId,
+                explanation = explanation,
+                updatedDate = now,
+            )
+            viewLifecycleOwner.lifecycleScope.launch {
+                problemModel.updateProblem(updated)
+                parentFragmentManager.setFragmentResult(
+                    QuizFragment.RESULT_PROBLEM_EDITED,
+                    Bundle.EMPTY,
+                )
+                parentFragmentManager.popBackStack()
+            }
+        } else {
+            val problem = ProblemEntity(
+                examId = examId,
+                categoryId = selectedCategoryId!!,
+                text = problemText,
+                choiceA = choiceA,
+                choiceB = choiceB,
+                choiceC = choiceC,
+                choiceD = choiceD,
+                userChoice = userChoice,
+                answer = correctAnswer,
+                reasonId = selectedReasonId,
+                statusId = selectedStatusId,
+                explanation = explanation,
+                createdDate = now,
+                updatedDate = now,
+            )
+            viewLifecycleOwner.lifecycleScope.launch {
+                problemModel.addProblem(problem)
+                parentFragmentManager.popBackStack()
+            }
         }
     }
 
@@ -245,11 +311,21 @@ class AddProblemFragment : Fragment() {
 
     companion object {
         const val ARG_EXAM_ID = "ARG_EXAM_ID"
+        const val ARG_PROBLEM = "ARG_PROBLEM"
 
         fun newInstance(examId: Int): AddProblemFragment {
             return AddProblemFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_EXAM_ID, examId)
+                }
+            }
+        }
+
+        fun newInstanceForEdit(problem: ProblemEntity): AddProblemFragment {
+            return AddProblemFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_EXAM_ID, problem.examId)
+                    putParcelable(ARG_PROBLEM, problem)
                 }
             }
         }

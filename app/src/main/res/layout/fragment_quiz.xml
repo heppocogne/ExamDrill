@@ -7,11 +7,23 @@
     <!-- 進捗 -->
     <TextView
         android:id="@+id/text_progress"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="12dp"
         android:textAlignment="center"
         android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_edit"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 編集ボタン -->
+    <Button
+        android:id="@+id/btn_edit"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- スクロール可能な問題エリア -->
@@ -19,7 +31,7 @@
         android:id="@+id/scroll_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/text_progress"
+        app:layout_constraintTop_toBottomOf="@id/btn_edit"
         app:layout_constraintBottom_toTopOf="@id/btn_action">
 
         <LinearLayout

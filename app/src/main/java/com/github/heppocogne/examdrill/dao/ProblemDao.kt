@@ -24,6 +24,9 @@ interface ProblemDao {
     @Query("SELECT * FROM problems WHERE exam_id = :examId ORDER BY RANDOM()")
     suspend fun getForRandom(examId: Int): List<ProblemEntity>
 
+    @Query("SELECT * FROM problems WHERE id = :id")
+    suspend fun getById(id: Int): ProblemEntity?
+
     @Insert
     suspend fun insert(entity: ProblemEntity)
 
