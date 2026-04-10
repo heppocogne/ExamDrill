@@ -187,9 +187,12 @@ class QuizFragment : Fragment() {
             binding.scrollContent.smoothScrollTo(0, binding.resultArea.top)
         }
 
-        // lastQuizDateを更新
+        // lastQuizDateを更新（メモリ上のリストも同期させ、後続のsaveChangesが
+        // 古いlastQuizDateで上書きしてしまうのを防ぐ）
+        val updated = problem.copy(lastQuizDate = Date(), updatedDate = Date())
+        problems = problems.toMutableList().also { it[currentIndex] = updated }
         viewLifecycleOwner.lifecycleScope.launch {
-            problemModel.updateProblem(problem.copy(lastQuizDate = Date(), updatedDate = Date()))
+            problemModel.updateProblem(updated)
         }
     }
 
