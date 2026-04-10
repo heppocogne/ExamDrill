@@ -32,6 +32,7 @@ class QuizSettingsFragment : Fragment() {
     private var reasons: List<ReasonEntity> = emptyList()
     private val statusCheckBoxes = mutableListOf<Pair<CheckBox, StatusEntity>>()
     private val reasonCheckBoxes = mutableListOf<Pair<CheckBox, ReasonEntity>>()
+    private var filtersLoaded = false
 
     private val examId: Int by lazy { requireArguments().getInt(ARG_EXAM_ID) }
 
@@ -75,6 +76,7 @@ class QuizSettingsFragment : Fragment() {
             buildStatusCheckBoxes()
             buildReasonCheckBoxes()
             restoreSettings()
+            filtersLoaded = true
         }
     }
 
@@ -117,6 +119,14 @@ class QuizSettingsFragment : Fragment() {
             return
         }
 
+        // 過去のバグで空セットが保存されてしまった状態を検出してデフォルトに戻す
+        val savedStatusIdsRaw = prefs.getStringSet("${key}_status_ids", null)
+        val savedReasonIdsRaw = prefs.getStringSet("${key}_reason_ids", null)
+        if (savedStatusIdsRaw.isNullOrEmpty() && savedReasonIdsRaw.isNullOrEmpty()) {
+            applyDefaults()
+            return
+        }
+
         val isReview = prefs.getBoolean("${key}_mode", true)
         if (isReview) {
             binding.radioReview.isChecked = true
@@ -126,7 +136,7 @@ class QuizSettingsFragment : Fragment() {
             binding.reviewFilters.visibility = View.GONE
         }
 
-        val savedStatusIds = prefs.getStringSet("${key}_status_ids", null)
+        val savedStatusIds = savedStatusIdsRaw
             ?.mapNotNull { it.toIntOrNull() }?.toSet()
         if (savedStatusIds != null) {
             for ((cb, status) in statusCheckBoxes) {
@@ -134,7 +144,7 @@ class QuizSettingsFragment : Fragment() {
             }
         }
 
-        val savedReasonIds = prefs.getStringSet("${key}_reason_ids", null)
+        val savedReasonIds = savedReasonIdsRaw
             ?.mapNotNull { it.toIntOrNull() }?.toSet()
         if (savedReasonIds != null) {
             for ((cb, reason) in reasonCheckBoxes) {
@@ -144,6 +154,10 @@ class QuizSettingsFragment : Fragment() {
     }
 
     private fun saveSettings() {
+        // フィルタ読み込み前はチェックボックスが空なので保存しない
+        // （保存してしまうと次回開いたときに復元で全てオフになってしまう）
+        if (!filtersLoaded) return
+
         val key = prefKey()
         val isReview = binding.radioReview.isChecked
         val statusIds = statusCheckBoxes
