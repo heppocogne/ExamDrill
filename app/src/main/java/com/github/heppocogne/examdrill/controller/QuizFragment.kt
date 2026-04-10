@@ -183,6 +183,10 @@ class QuizFragment : Fragment() {
         binding.btnAction.setText(R.string.next_problem)
         answered = true
 
+        binding.scrollContent.post {
+            binding.scrollContent.smoothScrollTo(0, binding.resultArea.top)
+        }
+
         // lastQuizDateを更新
         viewLifecycleOwner.lifecycleScope.launch {
             problemModel.updateProblem(problem.copy(lastQuizDate = Date(), updatedDate = Date()))
