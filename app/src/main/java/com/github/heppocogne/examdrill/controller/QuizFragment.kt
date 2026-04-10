@@ -219,18 +219,21 @@ class QuizFragment : Fragment() {
         }
     }
 
-    private val radioButtons by lazy {
-        listOf(binding.radioChoiceA, binding.radioChoiceB, binding.radioChoiceC, binding.radioChoiceD)
-    }
+    private val radioButtons
+        get() = listOf(
+            binding.radioChoiceA,
+            binding.radioChoiceB,
+            binding.radioChoiceC,
+            binding.radioChoiceD,
+        )
 
-    private val choiceRows by lazy {
-        listOf(
+    private val choiceRows
+        get() = listOf(
             Triple(binding.textLabelA, binding.radioChoiceA, binding.textChoiceA),
             Triple(binding.textLabelB, binding.radioChoiceB, binding.textChoiceB),
             Triple(binding.textLabelC, binding.radioChoiceC, binding.textChoiceC),
             Triple(binding.textLabelD, binding.radioChoiceD, binding.textChoiceD),
         )
-    }
 
     private fun setupRadioExclusion() {
         for ((label, rb, choiceText) in choiceRows) {
